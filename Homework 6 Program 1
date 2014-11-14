@@ -1,0 +1,10 @@
+import psutil, datetime
+
+time = datetime.datetime.fromtimestamp(psutil.boot_time())
+mem = psutil.virtual_memory()
+
+print ("This computer is accessed at:", time.strftime("%Y-%m-%d %H:%M:%S"))
+print ("The current user is:", psutil.users())
+print ("The total memory amount is:", mem.total)
+print ("CPU being utilized are:", psutil.cpu_percent(interval=None, percpu=False))
+
