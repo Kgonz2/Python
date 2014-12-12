@@ -1,0 +1,98 @@
+#Kevin C Gonzalez
+#Final Program No. 2
+#Gift Assigning
+
+import sqlite3
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+from wsgiref.simple_server import make_server
+
+#Creating a server to show the table from a database(incomplete)
+def get_vals(post_str):
+    form_vals = {item.split("=")[0]: item.split("=")[1] for item in post_str.decode().split("&")}
+    return form_vals
+
+def gift_web(environ, start_response):
+    message = ""
+    status = '200 OK'
+    headers = [('Content-type', 'html; charsef=utf-8')]
+    start_response(status, headers)
+    if(environ['REQUEST_METHOD'] == 'POST'):
+        message += "<br>These are the gifts you have assigned:"
+        request_body_size = int(environ['CONTENT_LENGTH'])
+        request_body = environ['final_exam.sqlite'].read(request_body_size)
+        form_vals = get_vals(request_body)
+        for item in form_vals.keys():
+            message += "<br/>" + item + " = " + form_vals[item]
+    message += "<h1>Assigned Gifts</h1>"
+    return[bytes(message,'utf-8')]
+
+
+#Function for Saving the Name and Gift inputted into a database
+def savedata(text1, text2):
+    con = sqlite3.connect('final_exam.sqlite')
+    cursor = con.cursor()
+    try:
+        cursor.execute("create table assigned_gift(name text, gift text)")
+    except:
+        cursor.execute("insert into assigned_gift(name, gift) values('"+e1.get()+"','"+e2.get()+"')")
+
+    #In order to look at the table inside the Database
+    result = cursor.execute("select * from assigned_gift")
+
+    for row in result:
+        print(row)
+    
+    con.commit()
+    con.close()
+
+#Function to open another window indicating the Name and Gift also to save into the database
+def cmd():
+    assign_gift = tkinter.Tk()
+    assign_gift.title("Assigned Gifts")
+    assign_gift.geometry("250x100")
+
+    frame_top = Frame(assign_gift)
+    frame_top.pack()
+
+    topbutton1 = Button(frame_top, text=e1.get())
+    topbutton1.pack(side = LEFT)
+
+    topbutton2 = Button(frame_top, text=e2.get())
+    topbutton2.pack(side = RIGHT)
+
+    savebtn = Button(assign_gift, text="Exit", command=sys.exit)
+    savebtn.pack(side = BOTTOM)
+    
+
+base = Tk()
+base.title("Gifts")
+
+frame1 = tkinter.Frame(base)
+frame1.pack()
+
+label1 = Label(frame1, text="Name")
+label1.pack(side = LEFT)
+
+e1 = Entry(frame1)
+e1.pack(side = LEFT)
+
+frame2 = tkinter.Frame(base)
+frame2.pack()
+
+label2 = Label(frame2, text="Gift")
+label2.pack(side = LEFT)
+
+e2 = Entry(frame2)
+e2.pack(side = LEFT)
+
+button1 = Button(base, text="Enter", command=cmd)
+button1.pack(side = BOTTOM)
+
+base.mainloop()
+
+httpd = make_server('', 8000, gift_web)
+print("Serving on port 8000...")
+
+httpd.serve_forever()
