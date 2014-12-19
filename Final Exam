@@ -21,11 +21,16 @@ def gift_web(environ, start_response):
     if(environ['REQUEST_METHOD'] == 'POST'):
         message += "<br>These are the gifts you have assigned:"
         request_body_size = int(environ['CONTENT_LENGTH'])
-        request_body = environ['final_exam.sqlite'].read(request_body_size)
+        request_body = environ['wsgi.input'].read(request_body_size)
         form_vals = get_vals(request_body)
         for item in form_vals.keys():
             message += "<br/>" + item + " = " + form_vals[item]
     message += "<h1>Assigned Gifts</h1>"
+    message +="<form method='POST'>"
+    message +="<br/><br/>Name:<input type=text name='name'>"
+    message +="<br/><br/>Gift:<input type=text name='gift'>"
+    message +="<br/><br/><input type=submit>"
+    message +="</form>"
     return[bytes(message,'utf-8')]
 
 
@@ -62,9 +67,11 @@ def cmd():
     topbutton2 = Button(frame_top, text=e2.get())
     topbutton2.pack(side = RIGHT)
 
-    savebtn = Button(assign_gift, text="Exit", command=sys.exit)
+    savebtn = Button(assign_gift, text="Save", command=savedata(e1, e2))
     savebtn.pack(side = BOTTOM)
-    
+
+    exitbtn = Button(assign_gift, text="Exit", command=sys.exit())
+    exitbtn.pack(side = BOTTOM)    
 
 base = Tk()
 base.title("Gifts")
@@ -90,9 +97,10 @@ e2.pack(side = LEFT)
 button1 = Button(base, text="Enter", command=cmd)
 button1.pack(side = BOTTOM)
 
-base.mainloop()
-
 httpd = make_server('', 8000, gift_web)
 print("Serving on port 8000...")
 
 httpd.serve_forever()
+base.mainloop()
+
+
