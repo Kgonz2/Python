@@ -1,0 +1,37 @@
+#Kevin C Gonzalez
+#Animal Homework 
+
+class Animal:
+    def _init_(self, name):
+        pass
+
+    def Who_Am_I(x):
+        if (x == "lemur"):
+            return "lemur"
+        elif (x == "tiger"):
+            return "tiger"
+        elif (x == "zebra"):
+            return "zebra"
+        else:
+            return
+lemur = Animal()
+tiger = Animal()
+zebra = Animal()
+
+lemur.Who_Am_I()
+tiger.Who_Am_I()
+zebra.Who_Am_I()
+
+
+tries = 3
+
+print("I will give you 3 hints, try to guess what animal I am.")
+
+while (tries != 0):
+    print("I am from the island Madagascar")
+    ans = input("Who am I?: ")
+    if(ans != "lemur"):
+        print("Sorry. Try again.")
+        tries -= 1
+    else:
+        print("You got it!")
